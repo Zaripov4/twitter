@@ -14,6 +14,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'email',
             'first_name',
             'last_name',
+            'password',
         ]
 
 class UserListSerializer(serializers.ModelSerializer):
@@ -22,11 +23,11 @@ class UserListSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'username',
-            'password',
             'email',
             'first_name',
             'last_name',
         ]
+
 class PostListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post

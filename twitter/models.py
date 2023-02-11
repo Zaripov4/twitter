@@ -6,7 +6,7 @@ class User(AbstractUser):
     dob = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return self.username()
+        return self.username
 
     class Meta:
         db_table = 'users'

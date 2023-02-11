@@ -9,7 +9,12 @@ from .serializers import (
 from .models import User, Post, File
 from django.views import generic
 from rest_framework.permissions import AllowAny
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import api_view
 from rest_framework import viewsets
+from rest_framework.views import APIView
+
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -29,21 +34,28 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset()
+class TweetListViewSet(viewsets.ModelViewSet):
+    serializer_class = PostListSerializer
+    queryset = Post.objects.all()
+    ordering = ['-create_date']
 
-def LikeView(request, pk):
-    post = get_object_or_404(Post, id=request.POST.get('post_id'))
-    linked = False
-    if post.likes.filter(id=request.user.id).exists():
-        post.like.remove(request.user)
+    def get_queryset(self):
+        return super().get_queryset()
+
+
+class LikeAPIView(APIView):
+    def get(self, request, pk):
+        post = get_object_or_404(Post, id=request.POST.get('post_id'))
         liked = False
-    else:
-        post.like.add(request.user)
-        liked = True
+        if post.likes.filter(id=request.user.id).exists():
+            post.like.remove(request.user)
+            liked = False
+        else:
+            post.like.add(request.user)
+            liked = True
+        return liked
 
-class TweetListView(generic.ListView):
-    model = Post
-    ordering = ['-created_date']
-
+@api_view(['POST'])
 def create_post(request):
     if request.method == 'POST':
         author = request.user
@@ -58,8 +70,7 @@ def create_post(request):
             file_instamce = file_form.save(commit=True)
             for f in files:
                 file_instamce.post = File(file=f, post=post_instance).save()
-        return PostListSerializer
-    else:
-        post_form = PostListSerializer()
-        file_form = FileListSerializer()
-        return create_post()
+            return PostListSerializer(data=post_instance)
+        return ValidationError(
+            detail='Error'
+        )
