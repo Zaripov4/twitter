@@ -3,7 +3,14 @@ from . models import User, Post, File
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        fields = (
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'followers',
+            'follows',
+        )
 
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:

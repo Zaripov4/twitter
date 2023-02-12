@@ -8,6 +8,15 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    @property
+    def followers(self):
+        return self.follower.all().count()
+
+    @property
+    def follows(self):
+        return self.following.all().count()
+    
+
     class Meta:
         db_table = 'users'
 
@@ -34,6 +43,6 @@ class File(models.Model):
         return self.post.body + 'File'
 
 class Follow(models.Model):
-    user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
-    follow_user = models.ForeignKey(User, related_name='follow_user', on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
+    following = models.ForeignKey(User, null=True, related_name='follower', on_delete=models.CASCADE)
+    follower = models.ForeignKey(User, null=True, related_name='following', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)

@@ -2,17 +2,19 @@ from django.urls import path, include
 from .views import (
     UserViewSet,
     TweetListViewSet,
-    create_post,
+    CreatePostAPIView,
     LikeAPIView,
+    FollowAPIView,
 )
 from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter()
-router.register('', UserViewSet)
-router.register('list/', TweetListViewSet)
+router.register('user', UserViewSet)
+router.register('list', TweetListViewSet)
 
 urlpatterns = [
-    path('create_tweet/', create_post, name='createtweet'),
-    path('like/<int:pk>', LikeAPIView.as_view(), name='like_tweet'),
+    path('create_tweet/', CreatePostAPIView.as_view(), name='createtweet'),
+    path('like/', LikeAPIView.as_view(), name='like_tweet'),
+    path('follow/', FollowAPIView.as_view(), name='follow'),
     path('', include(router.urls)),
 ]
