@@ -1,3 +1,4 @@
-# twitter
-# authentication
-# 
+# TODO
+- [x] Add authentication 
+- [ ] Add following
+- [ ] Add Docker
