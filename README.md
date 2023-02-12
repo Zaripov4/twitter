@@ -1,4 +1,5 @@
 # TODO
 - [x] Add authentication 
-- [ ] Add following
+- [x] Add following
 - [ ] Add Docker
+- [ ] Timeline
