@@ -1,3 +1,2 @@
 # TODO
-  [x] authentication
- 
+- [x] Add authentication 
