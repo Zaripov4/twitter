@@ -87,3 +87,12 @@ class FollowAPIView(APIView):
         if not created:
             follow.delete()
         return Response(status=status.HTTP_200_OK)
+
+class TimeLineAPIView(APIView):
+    def get(self, request):
+        tweets = Post.objects.all().order_by('-create_date')
+        if request.user in User.follows:
+            return tweets
+        raise ValidationError(
+            detail='Yo have not follow any user yet',
+        )
