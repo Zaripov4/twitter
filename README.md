@@ -2,4 +2,6 @@
 - [x] Add authentication 
 - [x] Add following
 - [ ] Add Docker
-- [ ] Timeline
+- [x] Timeline
+- [ ] Like counter
+- [ ] is_liked?
