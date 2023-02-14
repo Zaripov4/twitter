@@ -43,6 +43,14 @@ class File(models.Model):
         return self.post.body + 'File'
 
 class Follow(models.Model):
-    following = models.ForeignKey(User, null=True, related_name='follower', on_delete=models.CASCADE)
-    follower = models.ForeignKey(User, null=True, related_name='following', on_delete=models.CASCADE)
+    # user2 follows user1
+    user1 = models.ForeignKey(
+        User, null=True, related_name='user1', on_delete=models.CASCADE
+    )
+    user2 = models.ForeignKey(
+        User, null=True, related_name='user2', on_delete=models.CASCADE
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f'{self.user2} follows {self.user1}'

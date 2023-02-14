@@ -35,6 +35,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset()
+
 class TweetListViewSet(viewsets.ModelViewSet):
     serializer_class = PostListSerializer
     queryset = Post.objects.all()
@@ -90,9 +91,7 @@ class FollowAPIView(APIView):
 
 class TimeLineAPIView(APIView):
     def get(self, request):
-        tweets = Post.objects.all().order_by('-create_date')
-        if request.user in User.follows:
-            return tweets
-        raise ValidationError(
-            detail='Yo have not follow any user yet',
-        )
+        user_follows = Follow.objects.filter(user2=request.user).values_list('user1', flat=True)
+        tweets = Post.objects.filter(author__in=user_follows).order_by('-create_date')
+        serializer = PostListSerializer(tweets, many=True)
+        return Response(serializer.data)
