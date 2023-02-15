@@ -91,7 +91,7 @@ class FollowAPIView(APIView):
 
 class TimeLineAPIView(APIView):
     def get(self, request):
-        user_follows = Follow.objects.filter(user2=request.user).values_list('user1', flat=True)
+        user_follows = Follow.objects.filter(user2__id=request.user.id).values_list('user1', flat=True)
         tweets = Post.objects.filter(author__in=user_follows).order_by('-create_date')
         serializer = PostListSerializer(tweets, many=True)
         return Response(serializer.data)
