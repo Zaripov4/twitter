@@ -1,4 +1,6 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 from .serializers import (
     UserSerializer, 
     UserListSerializer, 
@@ -43,7 +45,16 @@ class TweetListViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset()
-
+    
+    def news_like(request, pk):
+        post = get_object_or_404(
+            Post,
+        )
+        if post.like.filter(id=request.user.id).exist():
+            post.like.remove(request.user)
+        else:
+            post.like.add(request.user)
+        return HttpResponseRedirect(reverse("news_detail", args=[str(pk)]))
 
 class LikeAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -76,6 +87,7 @@ class CreatePostAPIView(APIView):
             return ValidationError(
                 detail='Error'
             )
+
 
 class FollowAPIView(APIView):
     def post(self, request):
