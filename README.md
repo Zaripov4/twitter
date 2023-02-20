@@ -3,5 +3,6 @@
 - [x] Add following
 - [x] Add Docker
 - [x] Timeline
-- [ ] Like counter
-- [ ] is_liked?
+- [x] Like counter
+- [ ] is_liked
+- [ ] Add comment for tweets
