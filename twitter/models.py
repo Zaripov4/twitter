@@ -26,6 +26,7 @@ class Post(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     likes = models.ManyToManyField(User, related_name='tweets')
+    liked_by_author = models.BooleanField(default=False)
 
     def __str__(self):
         return self.body[:30]
