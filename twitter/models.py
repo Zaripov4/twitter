@@ -54,3 +54,10 @@ class Follow(models.Model):
 
     def __str__(self) -> str:
         return f'{self.user2} follows {self.user1}'
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    tweet = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user} likes {self.tweet}'

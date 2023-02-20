@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from .serializers import (
@@ -8,7 +8,13 @@ from .serializers import (
     PostListSerializer,
     FileListSerializer
 )
-from .models import User, Post, File, Follow
+from .models import (
+    User, 
+    Post, 
+    File, 
+    Follow, 
+    Like
+)
 from django.views import generic
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ModelViewSet
@@ -46,15 +52,6 @@ class TweetListViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return super().get_queryset()
     
-    def news_like(request, pk):
-        post = get_object_or_404(
-            Post,
-        )
-        if post.like.filter(id=request.user.id).exist():
-            post.like.remove(request.user)
-        else:
-            post.like.add(request.user)
-        return HttpResponseRedirect(reverse("news_detail", args=[str(pk)]))
 
 class LikeAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -67,6 +64,17 @@ class LikeAPIView(APIView):
             post.likes.add(request.user)
             post.save()
         return Response(status=status.HTTP_200_OK)
+    
+    def like_tweet(request, post_id):
+        tweet = get_object_or_404(Post, id=post_id)
+        if request.method == 'POST':
+            like = Like.objects.create(user=request.user, tweet=tweet)
+            tweet.likes += 1
+            tweet.save()
+            return redirect('TimeLineAPIView')
+        else:
+            return redirect('TimeLineAPIView')
+
 
 class CreatePostAPIView(APIView):
     def post(request):
