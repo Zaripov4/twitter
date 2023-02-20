@@ -33,6 +33,10 @@ class Post(models.Model):
     @property
     def like_count(self):
         return self.likes.count()
+    
+    @property
+    def liked_by_users(self):
+        return [like.user for like in self.likes.all()]
 
 
 class File(models.Model):

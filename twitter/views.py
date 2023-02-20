@@ -6,7 +6,8 @@ from .serializers import (
     UserListSerializer, 
     UserCreateSerializer, 
     PostListSerializer,
-    FileListSerializer
+    FileListSerializer,
+    LikeSerializer,
 )
 from .models import (
     User, 
@@ -53,27 +54,29 @@ class TweetListViewSet(viewsets.ModelViewSet):
         return super().get_queryset()
     
 
-class LikeAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        post_id = request.data.get('post_id')
-        post = get_object_or_404(Post, pk=post_id)
-        if post.likes.filter(id=request.user.id).exists():
-            post.likes.remove(request.user)
-            post.save()
-        else:
-            post.likes.add(request.user)
-            post.save()
-        return Response(status=status.HTTP_200_OK)
+class LikeViewSet(ModelViewSet):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+    # def post(self, request, *args, **kwargs):
+    #     post_id = request.data.get('post_id')
+    #     post = get_object_or_404(Post, pk=post_id)
+    #     if post.likes.filter(id=request.user.id).exists():
+    #         post.likes.remove(request.user)
+    #         post.save()
+    #     else:
+    #         post.likes.add(request.user)
+    #         post.save()
+    #     return Response(status=status.HTTP_200_OK)
     
-    def like_tweet(request, post_id):
-        tweet = get_object_or_404(Post, id=post_id)
-        if request.method == 'POST':
-            like = Like.objects.create(user=request.user, tweet=tweet)
-            tweet.likes += 1
-            tweet.save()
-            return redirect('TimeLineAPIView')
-        else:
-            return redirect('TimeLineAPIView')
+    # def like_tweet(request, post_id):
+    #     tweet = get_object_or_404(Post, id=post_id)
+    #     if request.method == 'POST':
+    #         like = Like.objects.create(user=request.user, tweet=tweet)
+    #         tweet.likes += 1
+    #         tweet.save()
+    #         return redirect('TimeLineAPIView')
+    #     else:
+    #         return redirect('TimeLineAPIView')
 
 
 class CreatePostAPIView(APIView):
