@@ -28,7 +28,7 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, related_name='tweets')
 
     def __str__(self):
-        return str(self.body)
+        return self.body[:30]
     
     @property
     def like_count(self):
@@ -44,7 +44,7 @@ class File(models.Model):
     file = models.FileField(upload_to='static', null=True, blank=True)
 
     def __str__(self):
-        return self.post.body + 'File'
+        return self.body[:30]
 
 class Follow(models.Model):
     # user2 follows user1
