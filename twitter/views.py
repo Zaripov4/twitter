@@ -7,14 +7,15 @@ from .serializers import (
     UserCreateSerializer, 
     PostListSerializer,
     FileListSerializer,
-    LikeSerializer,
+    CommentSerializer,
 )
 from .models import (
     User, 
     Post, 
     File, 
     Follow, 
-    Like
+    Like,
+    Comment,
 )
 from django.views import generic
 from rest_framework.permissions import AllowAny
@@ -48,29 +49,41 @@ class UserViewSet(viewsets.ModelViewSet):
 class TweetListViewSet(viewsets.ModelViewSet):
     serializer_class = PostListSerializer
     queryset = Post.objects.all()
-    ordering = ['-create_date']
+    ordering = ['-id']
 
     def get_queryset(self):
         return super().get_queryset()
     
 
-class LikeViewSet(ModelViewSet):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
+class LikeAPIView(APIView): 
+    def post(self, request, *args, **kwargs):    
+        post_id = request.data.get('post_id')
+        post = get_object_or_404(Post, pk=post_id)
+        if request.user != post.author:
+            post.liked_by_author = request.user == post.author
+            post.save()
+            return Response(status=status.HTTP_200_OK)
+        
+        if post.likes.filter(id=request.user.id).exists():
+            post.likes.remove(request.user)
+            post.save()
+        else:
+            post.likes.add(request.user)
+            post.save()
+
+    # def like_tweet(request, post_id):
+    #     tweet = get_object_or_404(Post, pk=post_id)
+    #     if request.user != tweet.user:
+    #         tweet.liked_by_author = request.user == tweet.user
+    #         tweet.save()
+    #     return Response(status=status.HTTP_200_OK)
     
-    def like_tweet(request, post_id):
-        tweet = get_object_or_404(Post, pk=post_id)
-        if request.user != tweet.user:
-            tweet.liked_by_author = request.user == tweet.user
-            tweet.save()
-        return TimeLineAPIView()
-    
-    def unlike_tweet(request, post_id):
-        tweet = get_object_or_404(Post, pk=post_id)
-        tweet.liked_by_users.remove(request.user)
-        tweet.liked_by_author = request.user == tweet.user
-        tweet.save()
-        return TimeLineAPIView()
+    # def unlike_tweet(request, post_id):
+    #     tweet = get_object_or_404(Post, pk=post_id)
+    #     tweet.liked_by_users.remove(request.user)
+    #     tweet.liked_by_author = request.user == tweet.user
+    #     tweet.save()
+    #     return Response(status=status.HTTP_200_OK)
 
 
 class CreatePostAPIView(APIView):
@@ -112,3 +125,7 @@ class TimeLineAPIView(APIView):
         tweets = Post.objects.filter(author__in=user_follows).order_by('-create_date')
         serializer = PostListSerializer(tweets, many=True)
         return Response(serializer.data)
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer

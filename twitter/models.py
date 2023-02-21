@@ -66,3 +66,15 @@ class Like(models.Model):
 
     def __str__(self):
         return f'{self.user} likes {self.tweet}'
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    content = models.CharField(max_length=400)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_on']
+
+    def __str__(self):
+        return f'Comment {self.content} by {self.user}'

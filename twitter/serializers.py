@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import User, Post, File, Like
+from . models import User, Post, File, Like, Comment
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -36,17 +36,16 @@ class UserListSerializer(serializers.ModelSerializer):
         ]
 
 class PostListSerializer(serializers.ModelSerializer):
-    liked_by_users = UserSerializer(many=True, read_only=True)
     class Meta:
         model = Post
         fields = [
+            'id',
             'author',
             'body',
             'create_date',
             'parent',
             'like_count',
-            'liked_by_users',
-            'likes',
+            'liked_by_author',
         ]
 
 class FileListSerializer(serializers.ModelSerializer):
@@ -54,7 +53,7 @@ class FileListSerializer(serializers.ModelSerializer):
         model = File
         fields = '__all__'
 
-class LikeSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Like
+        model = Comment
         fields = '__all__'
