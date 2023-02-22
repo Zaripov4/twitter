@@ -10,11 +10,11 @@ class User(AbstractUser):
 
     @property
     def followers(self):
-        return self.follower.all().count()
+        return self.user1.all().count()
 
     @property
     def follows(self):
-        return self.following.all().count()
+        return self.user2.all().count()
     
 
     class Meta:
