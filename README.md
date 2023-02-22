@@ -5,4 +5,4 @@
 - [x] Timeline
 - [x] Like counter
 - [ ] is_liked
-- [ ] Add comment for tweets
+- [x] Add comment for tweets
