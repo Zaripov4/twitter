@@ -46,6 +46,7 @@ class PostListSerializer(serializers.ModelSerializer):
             'parent',
             'like_count',
             'liked_by_author',
+            'comments',
         ]
 
 class FileListSerializer(serializers.ModelSerializer):

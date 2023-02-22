@@ -32,6 +32,10 @@ class Post(models.Model):
         return self.body[:30]
     
     @property
+    def comments(self):
+        pass
+
+    @property
     def like_count(self):
         return self.likes.count()
     
