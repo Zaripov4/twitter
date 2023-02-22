@@ -4,5 +4,5 @@
 - [x] Add Docker
 - [x] Timeline
 - [x] Like counter
-- [ ] is_liked
+- [ ] is_liked by owner
 - [x] Add comment for tweets
