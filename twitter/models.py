@@ -16,7 +16,6 @@ class User(AbstractUser):
     def follows(self):
         return self.user2.all().count()
     
-
     class Meta:
         db_table = 'users'
 
@@ -42,6 +41,10 @@ class Post(models.Model):
     @property
     def liked_by_users(self):
         return [like.user for like in self.likes.all()]
+    
+    @property
+    def files(self):
+        return self.file()
 
 
 class File(models.Model):

@@ -8,6 +8,7 @@ from .serializers import (
     PostListSerializer,
     FileListSerializer,
     CommentSerializer,
+    PostCreateSerializer,
 )
 from .models import (
     User, 
@@ -86,7 +87,9 @@ class LikeAPIView(APIView):
     #     return Response(status=status.HTTP_200_OK)
 
 
-class CreatePostAPIView(APIView):
+class CreatePostViewSet(ModelViewSet):
+    serializer_class = PostCreateSerializer
+    queryset = Post.objects.all()
     def post(request):
         if request.method == 'POST':
             author = request.user

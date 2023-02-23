@@ -49,6 +49,15 @@ class PostListSerializer(serializers.ModelSerializer):
             'comments',
         ]
 
+class PostCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = [
+            'body',
+            'parent',
+            'files',
+        ]
+
 class FileListSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
