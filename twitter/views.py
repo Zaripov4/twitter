@@ -56,35 +56,9 @@ class TweetViewSet(viewsets.ModelViewSet):
         return super().get_queryset()
     
 
-class LikeAPIView(APIView): 
-    def post(self, request, *args, **kwargs):    
-        post_id = request.data.get('post_id')
-        post = get_object_or_404(Post, pk=post_id)
-        if request.user != post.author:
-            post.liked_by_author = request.user == post.author
-            post.save()
-            return Response(status=status.HTTP_200_OK)
-        
-        if post.likes.filter(id=request.user.id).exists():
-            post.likes.remove(request.user)
-            post.save()
-        else:
-            post.likes.add(request.user)
-            post.save()
-
-    # def like_tweet(request, post_id):
-    #     tweet = get_object_or_404(Post, pk=post_id)
-    #     if request.user != tweet.user:
-    #         tweet.liked_by_author = request.user == tweet.user
-    #         tweet.save()
-    #     return Response(status=status.HTTP_200_OK)
-    
-    # def unlike_tweet(request, post_id):
-    #     tweet = get_object_or_404(Post, pk=post_id)
-    #     tweet.liked_by_users.remove(request.user)
-    #     tweet.liked_by_author = request.user == tweet.user
-    #     tweet.save()
-    #     return Response(status=status.HTTP_200_OK)
+class LikeViewSet(ModelViewSet):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
 
 
 class FollowAPIView(APIView):
