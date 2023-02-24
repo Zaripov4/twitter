@@ -10,13 +10,12 @@ class User(AbstractUser):
 
     @property
     def followers(self):
-        return self.follower.all().count()
+        return self.user1.all().count()
 
     @property
     def follows(self):
-        return self.following.all().count()
+        return self.user2.all().count()
     
-
     class Meta:
         db_table = 'users'
 
@@ -26,10 +25,15 @@ class Post(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     likes = models.ManyToManyField(User, related_name='tweets')
+    liked_by_author = models.BooleanField(default=False)
 
     def __str__(self):
         return self.body[:30]
     
+    @property
+    def comments(self):
+        pass
+
     @property
     def like_count(self):
         return self.likes.count()
@@ -37,6 +41,10 @@ class Post(models.Model):
     @property
     def liked_by_users(self):
         return [like.user for like in self.likes.all()]
+    
+    @property
+    def files(self):
+        return self.file()
 
 
 class File(models.Model):
@@ -65,3 +73,15 @@ class Like(models.Model):
 
     def __str__(self):
         return f'{self.user} likes {self.tweet}'
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    content = models.CharField(max_length=400)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_on']
+
+    def __str__(self):
+        return f'Comment {self.content} by {self.user}'

@@ -7,14 +7,16 @@ from .serializers import (
     UserCreateSerializer, 
     PostListSerializer,
     FileListSerializer,
-    LikeSerializer,
+    CommentSerializer,
+    PostCreateSerializer,
 )
 from .models import (
     User, 
     Post, 
     File, 
     Follow, 
-    Like
+    Like,
+    Comment,
 )
 from django.views import generic
 from rest_framework.permissions import AllowAny
@@ -26,7 +28,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
@@ -48,7 +50,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class TweetListViewSet(viewsets.ModelViewSet):
     serializer_class = PostListSerializer
     queryset = Post.objects.all()
-    ordering = ['-create_date']
+    ordering = ['-id']
 
     def get_queryset(self):
         return super().get_queryset()
@@ -59,7 +61,9 @@ class LikeViewSet(ModelViewSet):
     serializer_class = LikeSerializer
 
 
-class CreatePostAPIView(APIView):
+class CreatePostViewSet(ModelViewSet):
+    serializer_class = PostCreateSerializer
+    queryset = Post.objects.all()
     def post(request):
         if request.method == 'POST':
             author = request.user
@@ -85,8 +89,8 @@ class FollowAPIView(APIView):
         user_id = request.data.get('user_id')
         following_user = User.objects.get(id=user_id)
         follow, created = Follow.objects.get_or_create(
-            following=following_user,
-            follower=request.user
+            user1=following_user,
+            user2=request.user
         )
         if not created:
             follow.delete()
@@ -98,3 +102,7 @@ class TimeLineAPIView(APIView):
         tweets = Post.objects.filter(author__in=user_follows).order_by('-create_date')
         serializer = PostListSerializer(tweets, many=True)
         return Response(serializer.data)
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
