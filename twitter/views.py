@@ -47,7 +47,7 @@ class UserViewSet(ModelViewSet):
     def get_queryset(self):
         return super().get_queryset()
 
-class TweetListViewSet(viewsets.ModelViewSet):
+class TweetViewSet(viewsets.ModelViewSet):
     serializer_class = PostListSerializer
     queryset = Post.objects.all()
     ordering = ['-id']
@@ -85,29 +85,6 @@ class LikeAPIView(APIView):
     #     tweet.liked_by_author = request.user == tweet.user
     #     tweet.save()
     #     return Response(status=status.HTTP_200_OK)
-
-
-class CreatePostViewSet(ModelViewSet):
-    serializer_class = PostCreateSerializer
-    queryset = Post.objects.all()
-    def post(request):
-        if request.method == 'POST':
-            author = request.user
-            post_form = PostListSerializer()
-            file_form = FileListSerializer()
-            files = request.FILES.getlist('file')
-            if post_form.is_valid() and file_form.is_valid():
-                post_instance = post_form.save(commit=True)
-                post_instance.author = author
-                post_instance.save()
-                
-                file_instamce = file_form.save(commit=True)
-                for f in files:
-                    file_instamce.post = File(file=f, post=post_instance).save()
-                return PostListSerializer(data=post_instance)
-            return ValidationError(
-                detail='Error'
-            )
 
 
 class FollowAPIView(APIView):

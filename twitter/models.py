@@ -31,8 +31,12 @@ class Post(models.Model):
         return self.body[:30]
     
     @property
+    def comments_count(self):
+        return self.comments.count()
+    
+    @property
     def comments(self):
-        pass
+        return list(self.comments.order_by('created_on')[:5])
 
     @property
     def like_count(self):

@@ -6,3 +6,4 @@
 - [x] Like counter
 - [x] is_liked by owner
 - [x] Add comment for tweets
+- [ ] Add comment count for tweets
