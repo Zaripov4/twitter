@@ -47,6 +47,7 @@ class PostListSerializer(serializers.ModelSerializer):
             'like_count',
             'liked_by_author',
             'comments',
+            'comments_count'
         ]
 
 class PostCreateSerializer(serializers.ModelSerializer):
