@@ -9,6 +9,7 @@ from .serializers import (
     FileListSerializer,
     CommentSerializer,
     PostCreateSerializer,
+    
 )
 from .models import (
     User, 
@@ -54,11 +55,60 @@ class TweetViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset()
-    
 
-class LikeViewSet(ModelViewSet):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
+
+class LikeAPIView(APIView): 
+    def post(self, request, *args, **kwargs):  
+        post_id = request.data.get('post_id')
+        post = get_object_or_404(Post, pk=post_id)
+        if request.user != post.author:
+            post.liked_by_author = request.user == post.author
+            post.save()
+            return Response(status=status.HTTP_200_OK)
+        
+        if post.likes.filter(id=request.user.id).exists():
+            post.likes.remove(request.user)
+            post.save()
+        else:
+            post.likes.add(request.user)
+            post.save()
+
+    # def like_tweet(request, post_id):
+    #     tweet = get_object_or_404(Post, pk=post_id)
+    #     if request.user != tweet.user:
+    #         tweet.liked_by_author = request.user == tweet.user
+    #         tweet.save()
+    #     return Response(status=status.HTTP_200_OK)
+    
+    # def unlike_tweet(request, post_id):
+    #     tweet = get_object_or_404(Post, pk=post_id)
+    #     tweet.liked_by_users.remove(request.user)
+    #     tweet.liked_by_author = request.user == tweet.user
+    #     tweet.save()
+    #     return Response(status=status.HTTP_200_OK)
+
+
+class CreatePostViewSet(ModelViewSet):
+    serializer_class = PostCreateSerializer
+    queryset = Post.objects.all()
+    def post(request):
+        if request.method == 'POST':
+            author = request.user
+            post_form = PostListSerializer()
+            file_form = FileListSerializer()
+            files = request.FILES.getlist('file')
+            if post_form.is_valid() and file_form.is_valid():
+                post_instance = post_form.save(commit=True)
+                post_instance.author = author
+                post_instance.save()
+                
+                file_instamce = file_form.save(commit=True)
+                for f in files:
+                    file_instamce.post = File(file=f, post=post_instance).save()
+                return PostListSerializer(data=post_instance)
+            return ValidationError(
+                detail='Error'
+            )
 
 
 class FollowAPIView(APIView):
