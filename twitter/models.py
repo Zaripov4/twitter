@@ -89,3 +89,18 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comment {self.content} by {self.user}'
+
+class ResetCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.UUIDField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        ResetCode.objects.filter(user=self.user).delete()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.user.email
