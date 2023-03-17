@@ -1,5 +1,5 @@
 import pytest
-from twitter.models import User
+from blog.models import User
 from django.core import exceptions
 from rest_framework.validators import ValidationError
 

@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'twitter',
+    'blog',
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt',
@@ -136,4 +136,4 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
 }
 
-AUTH_USER_MODEL = 'twitter.User'
+AUTH_USER_MODEL = 'blog.User'
