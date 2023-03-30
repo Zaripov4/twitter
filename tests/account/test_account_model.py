@@ -1,6 +1,5 @@
 import pytest
 from blog.models import User
-from django.core import exceptions
 from rest_framework.validators import ValidationError
 
 pytestmark = pytest.mark.django_db
@@ -10,6 +9,7 @@ USER_PAYLOAD = {
     'email': 'joe@gmail.com',
     'password': 'supersecret',
 }
+
 
 class TestUserModel:
     def test_create_user(self):
@@ -46,16 +46,22 @@ class TestUserModel:
             ('joe', 'supersecret', 'joe@gmail.com'),
         ],
     )
-
-    def test_invalid_data_does_not_create_user(self, username, password, emial):
+    def test_invalid_data_does_not_create_user(self, username, password,
+                                               emial):
         with pytest.raises(ValidationError):
-            User.objects.create_user(username=username, password=password, emial=emial)
+            User.objects.create_user(
+                username=username, password=password, emial=emial
+            )
         assert User.objects.count() == 0
 
     def test_create_user_with_same_username_fails(self):
         User.objects.create_user(**USER_PAYLOAD)
         with pytest.raises(ValidationError) as exc:
-            User.objects.create_user(username='joe', password='supersecret1234', email='joe@gmail.com')
+            User.objects.create_user(
+                username='joe',
+                password='supersecret1234',
+                email='joe@gmail.com'
+            )
         assert exc.value.messages == [
             'User with this username already exists'
         ]
@@ -64,9 +70,10 @@ class TestUserModel:
     def test_create_user_with_same_email_fails(self):
         User.objects.create_user(**USER_PAYLOAD)
         with pytest.raises(ValidationError) as exc:
-            User.objects.create_user(username='alex', password='something', email='joe@gmail.com')
+            User.objects.create_user(
+                username='alex', password='something', email='joe@gmail.com'
+            )
         assert exc.value.message == [
             'User with this email already exists'
         ]
         assert User.objects.count() == 1
-

@@ -8,7 +8,8 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('twitter', '0005_remove_follow_follower_remove_follow_following_and_more'),
+        ('blog',
+         '0005_remove_follow_follower_remove_follow_following_and_more'),
     ]
 
     operations = [
@@ -20,9 +21,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Like',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tweet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='twitter.post')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('id', models.BigAutoField(
+                    auto_created=True, primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
+                ('tweet', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='twitter.post')),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

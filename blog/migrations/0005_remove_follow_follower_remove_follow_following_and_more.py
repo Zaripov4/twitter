@@ -8,7 +8,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('twitter', '0004_rename_date_follow_created_at_and_more'),
+        ('blog', '0004_rename_date_follow_created_at_and_more'),
     ]
 
     operations = [
@@ -23,11 +23,18 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='follow',
             name='user1',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user1', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.CASCADE,
+                related_name='user1',
+                to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='follow',
             name='user2',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='user2', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='user2',
+                to=settings.AUTH_USER_MODEL),
         ),
     ]

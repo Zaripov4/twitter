@@ -1,9 +1,11 @@
 from rest_framework import serializers
-from . models import User, Post, File, Like, Comment, ResetCode
+from . models import User, Post, File, Like, Comment
 from django.contrib.auth import password_validation
 from rest_framework.exceptions import ValidationError
 
+
 class UserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
         fields = (
@@ -15,7 +17,9 @@ class UserSerializer(serializers.ModelSerializer):
             'follows',
         )
 
+
 class UserCreateSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
         fields = [
@@ -27,7 +31,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'password',
         ]
 
+
 class UserListSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
         fields = [
@@ -38,7 +44,9 @@ class UserListSerializer(serializers.ModelSerializer):
             'last_name',
         ]
 
+
 class PostListSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Post
         fields = [
@@ -53,7 +61,9 @@ class PostListSerializer(serializers.ModelSerializer):
             'comments_count'
         ]
 
+
 class PostCreateSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Post
         fields = [
@@ -62,20 +72,27 @@ class PostCreateSerializer(serializers.ModelSerializer):
             'files',
         ]
 
+
 class FileListSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = File
         fields = '__all__'
 
+
 class CommentSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Comment
         fields = '__all__'
 
+
 class LikeSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Like
         fields = '__all__'
+
 
 class PasswordResetSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=150)
@@ -94,9 +111,8 @@ class PasswordResetConfirmSerializer(serializers.ModelSerializer):
         if password:
             try:
                 password_validation.validate_password(password, password)
-            except:
+            except password_validation.DoesNotExist:
                 raise ValidationError('error')
-
         return attrs
 
 

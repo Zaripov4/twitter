@@ -1,5 +1,6 @@
-import pytest
+# import pytest
 from rest_framework import status
+
 
 class TestAccountAPI:
     def anonymous_user_can_get_user_list(self, client):
@@ -11,11 +12,11 @@ class TestAccountAPI:
         assert response.json() == {
             'detail': 'Authentication credential were not provided'
         }
-    
+
     def test_sign_up(self, mocker, client):
         response = client.get(
-            path = '/user/',
-            data = {
+            path='/user/',
+            data={
                 'username': 'user',
                 'password': 'supersecret123'
             },
@@ -30,8 +31,8 @@ class TestAccountAPI:
 
     def sign_up_fail_for_same_username(self, client):
         response = client.post(
-            path = '/user/',
-            data = {
+            path='/user/',
+            data={
                 'username': 'user1',
                 'password': 'supersecret1234'
             },
@@ -39,8 +40,8 @@ class TestAccountAPI:
 
         assert response.status_code == status.HTTP_201_CREATED
         response = client.post(
-            path = '/user/',
-            data = {
+            path='/user/',
+            data={
                 'username': 'user1',
                 'password': 'supersecret123456',
             },
@@ -49,20 +50,21 @@ class TestAccountAPI:
         assert response.json() == {
             'username': ['user with this username already exists.']
         }
-    
+
+
 class TestSignIn:
 
     def test_user_can_get_token_with_valid_credentials(self, mocker, client):
         client.post(
-            path = '/user/',
-            data = {
+            path='/user/',
+            data={
                 'username': 'user1',
                 'password': 'supersecret1234'
             },
         )
         response = client.post(
-            path = '/api/token',
-            data = {
+            path='/api/token',
+            data={
                 'username': 'user1',
                 'password': 'supersecret1234'
             },
@@ -72,18 +74,18 @@ class TestSignIn:
             'access': mocker.ANY,
             'refresh': mocker.ANY,
         }
-    
+
     def test_user_not_get_token_with_valid_credentials(self, client):
         client.post(
-            path = '/user/',
-            data = {
+            path='/user/',
+            data={
                 'username': 'user1',
                 'password': 'supersecret123'
             },
         )
         response = client.post(
-            path = '/api/token',
-            data = {
+            path='/api/token',
+            data={
                 'username': 'user1',
                 'password': 'wrong_password',
             },
@@ -95,24 +97,24 @@ class TestSignIn:
 
     def test_user_can_refresh_token(self, client, mocker):
         client.post(
-            path = '/user/',
-            data = {
+            path='/user/',
+            data={
                 'username': 'user1',
                 'password': 'supersecret123',
             },
         )
-        
+
         refresh = client.post(
-            path = '/user/',
-            data = {
+            path='/user/',
+            data={
                 'username': 'user1',
                 'password': 'supersecret123',
             },
         ).json(['refresh'])
-        
+
         response = client.post(
-            path = '/api/token/refresh',
-            data = {
+            path='/api/token/refresh',
+            data={
                 'refresh': refresh,
             }
         )

@@ -22,12 +22,15 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token', TokenObtainPairView.as_view(), name='TokenObtainView'),
-    path('api/refresh/token', TokenRefreshView.as_view(), name='TokenRefreshView'),
+    path(
+        'api/refresh/token', TokenRefreshView.as_view(),
+        name='TokenRefreshView'
+    ),
     path(
         "docs/", schema_view.with_ui("swagger", cache_timeout=0), name="docs"
     ),
     path(
         "docs2/", schema_view.with_ui("redoc", cache_timeout=0), name="docs2"
     ),
-    path('', include('twitter.urls')),
+    path('', include('blog.urls')),
 ]

@@ -1,11 +1,9 @@
-from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse
+from django.shortcuts import get_object_or_404
 import uuid
-from django.http import HttpResponseRedirect
 from .serializers import (
-    UserSerializer, 
-    UserListSerializer, 
-    UserCreateSerializer, 
+    UserSerializer,
+    UserListSerializer,
+    UserCreateSerializer,
     PostListSerializer,
     FileListSerializer,
     CommentSerializer,
@@ -15,23 +13,19 @@ from .serializers import (
     PasswordResetSerializer,
 )
 from .models import (
-    User, 
-    Post, 
-    File, 
-    Follow, 
-    Like,
+    User,
+    Post,
+    File,
+    Follow,
     Comment,
     ResetCode,
 )
-from django.views import generic
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import ValidationError
-from rest_framework.decorators import api_view
 from rest_framework import viewsets, status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import HttpResponse
 from rest_framework.decorators import action
 from service import settings
 from django.core.mail import send_mail
@@ -41,14 +35,15 @@ password_reset_url = home_url + 'password_reset_confirm/'
 password_reset_msg = 'Password reset link {}{}'
 password_reset_theme = 'Password reset'
 
+
 class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
     def get_permissions(self):
         if self.action == 'create':
-            self.permission_classes = [AllowAny]    
-        return super(UserViewSet,self).get_permissions()
+            self.permission_classes = [AllowAny]
+        return super(UserViewSet, self).get_permissions()
 
     def get_serializer_class(self):
         serializer_map = {
@@ -59,22 +54,25 @@ class UserViewSet(ModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset()
-    
+
     @action(methods=['get'], detail=False, url_path='@me')
     def me(self, request, *args, **kwargs):
         serializer = self.serializer_class(self.request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 def send_password_reset(email):
     user = User.objects.filter(email=email).all()
     if not user.exists():
         return
-    
+
     user = user.first()
     code = uuid.uuid4()
     ResetCode.objects.create(user=user, code=code)
     message = password_reset_msg.format(password_reset_url, code)
-    send_mail(password_reset_theme, message, settings.EMAIL_HOST_USER, [email], fail_silenty=False)
+    send_mail(password_reset_theme, message, settings.EMAIL_HOST_USER, [email],
+              fail_silenty=False)
+
 
 class PasswordResetAPIView(APIView):
     """Password reset api to send a reset link to email"""
@@ -93,6 +91,7 @@ class PasswordResetAPIView(APIView):
                          "message": "Password reset link sent to your email"},
                         status=status.HTTP_200_OK)
 
+
 class PasswordResetConfirmAPIView(APIView):
     permission_classes = [AllowAny, ]
 
@@ -110,11 +109,13 @@ class PasswordResetConfirmAPIView(APIView):
             user.save()
             return Response(
                 {
-                    "msg": "password has been changed succesfully", "email": user.email
+                    "msg": "password has been changed succesfully",
+                    "email": user.email
                 },
                 status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ChangePasswordView(generics.UpdateAPIView):
     serializer_class = ChangePasswordSerializer
@@ -124,7 +125,7 @@ class ChangePasswordView(generics.UpdateAPIView):
     def get_object(self):
         obj = self.request.user
         return obj
-    
+
     def update(self, request, *args, **kwargs):
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
@@ -149,7 +150,7 @@ class ChangePasswordView(generics.UpdateAPIView):
             }
 
             return Response(response, status=status.HTTP_200_OK)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -162,15 +163,15 @@ class TweetViewSet(viewsets.ModelViewSet):
         return super().get_queryset()
 
 
-class LikeAPIView(APIView): 
-    def post(self, request, *args, **kwargs):  
+class LikeAPIView(APIView):
+    def post(self, request, *args, **kwargs):
         post_id = request.data.get('post_id')
         post = get_object_or_404(Post, pk=post_id)
         if request.user != post.author:
             post.liked_by_author = request.user == post.author
             post.save()
             return Response(status=status.HTTP_200_OK)
-        
+
         if post.likes.filter(id=request.user.id).exists():
             post.likes.remove(request.user)
             post.save()
@@ -184,7 +185,7 @@ class LikeAPIView(APIView):
     #         tweet.liked_by_author = request.user == tweet.user
     #         tweet.save()
     #     return Response(status=status.HTTP_200_OK)
-    
+
     # def unlike_tweet(request, post_id):
     #     tweet = get_object_or_404(Post, pk=post_id)
     #     tweet.liked_by_users.remove(request.user)
@@ -196,6 +197,7 @@ class LikeAPIView(APIView):
 class CreatePostViewSet(ModelViewSet):
     serializer_class = PostCreateSerializer
     queryset = Post.objects.all()
+
     def post(request):
         if request.method == 'POST':
             author = request.user
@@ -206,10 +208,12 @@ class CreatePostViewSet(ModelViewSet):
                 post_instance = post_form.save(commit=True)
                 post_instance.author = author
                 post_instance.save()
-                
+
                 file_instamce = file_form.save(commit=True)
                 for f in files:
-                    file_instamce.post = File(file=f, post=post_instance).save()
+                    file_instamce.post = File(
+                        file=f, post=post_instance
+                    ).save()
                 return PostListSerializer(data=post_instance)
             return ValidationError(
                 detail='Error'
@@ -228,12 +232,18 @@ class FollowAPIView(APIView):
             follow.delete()
         return Response(status=status.HTTP_200_OK)
 
+
 class TimeLineAPIView(APIView):
     def get(self, request):
-        user_follows = Follow.objects.filter(user2__id=request.user.id).values_list('user1', flat=True)
-        tweets = Post.objects.filter(author__in=user_follows).order_by('-create_date')
+        user_follows = Follow.objects.filter(
+            user2__id=request.user.id
+        ).values_list('user1', flat=True)
+        tweets = Post.objects.filter(
+            author__in=user_follows
+        ).order_by('-create_date')
         serializer = PostListSerializer(tweets, many=True)
         return Response(serializer.data)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()

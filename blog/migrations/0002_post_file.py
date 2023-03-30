@@ -8,27 +8,47 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('twitter', '0001_initial'),
+        ('blog', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Post',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
                 ('body', models.CharField(max_length=200)),
                 ('create_date', models.DateTimeField(auto_now_add=True)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='author', to=settings.AUTH_USER_MODEL)),
-                ('likes', models.ManyToManyField(related_name='tweets', to=settings.AUTH_USER_MODEL)),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='twitter.post')),
+                ('author', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='author',
+                    to=settings.AUTH_USER_MODEL)),
+                ('likes', models.ManyToManyField(
+                    related_name='tweets',
+                    to=settings.AUTH_USER_MODEL)),
+                ('parent', models.ForeignKey(
+                    blank=True,
+                    null=True,
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='twitter.post')),
             ],
         ),
         migrations.CreateModel(
             name='File',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(blank=True, null=True, upload_to='static')),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='twitter.post')),
+                ('id', models.BigAutoField(
+                    auto_created=True,
+                    primary_key=True,
+                    serialize=False,
+                    verbose_name='ID')),
+                ('file', models.FileField(
+                    blank=True, null=True, upload_to='static')),
+                ('post', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='twitter.post')),
             ],
         ),
     ]
