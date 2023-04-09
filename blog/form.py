@@ -1,19 +1,19 @@
-from django.forms import ClearableFileInput
 from django import forms
+from django.forms import ClearableFileInput
 
-from .models import Post, File
+from .models import File, Post
 
 
 class FeedModelForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['body']
+        fields = ["body"]
 
 
 class FileModelForm(forms.ModelForm):
     class Meta:
         model = File
-        fields = ['file']
+        fields = ["file"]
         widgets = {
-            'file': ClearableFileInput(attrs={'multiple': True}),
+            "file": ClearableFileInput(attrs={"multiple": True}),
         }

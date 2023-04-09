@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class User(AbstractUser):
@@ -17,17 +17,17 @@ class User(AbstractUser):
         return self.user2.all().count()
 
     class Meta:
-        db_table = 'users'
+        db_table = "users"
 
 
 class Post(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, null=False,
-                               related_name='author')
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=False, related_name="author"
+    )
     body = models.CharField(max_length=200)
     create_date = models.DateTimeField(auto_now_add=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True,
-                               blank=True)
-    likes = models.ManyToManyField(User, related_name='tweets')
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+    likes = models.ManyToManyField(User, related_name="tweets")
     liked_by_author = models.BooleanField(default=False)
 
     def __str__(self):
@@ -39,7 +39,7 @@ class Post(models.Model):
 
     @property
     def comments(self):
-        return list(self.comments.order_by('created_on')[:5])
+        return list(self.comments.order_by("created_on")[:5])
 
     @property
     def like_count(self):
@@ -56,7 +56,7 @@ class Post(models.Model):
 
 class File(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=False)
-    file = models.FileField(upload_to='static', null=True, blank=True)
+    file = models.FileField(upload_to="static", null=True, blank=True)
 
     def __str__(self):
         return self.body[:30]
@@ -65,15 +65,15 @@ class File(models.Model):
 class Follow(models.Model):
     # user2 follows user1
     user1 = models.ForeignKey(
-        User, null=True, related_name='user1', on_delete=models.CASCADE
+        User, null=True, related_name="user1", on_delete=models.CASCADE
     )
     user2 = models.ForeignKey(
-        User, null=True, related_name='user2', on_delete=models.CASCADE
+        User, null=True, related_name="user2", on_delete=models.CASCADE
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return f'{self.user2} follows {self.user1}'
+        return f"{self.user2} follows {self.user1}"
 
 
 class Like(models.Model):
@@ -81,21 +81,20 @@ class Like(models.Model):
     tweet = models.ForeignKey(Post, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.user} likes {self.tweet}'
+        return f"{self.user} likes {self.tweet}"
 
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE,
-                             related_name='comments')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     content = models.CharField(max_length=400)
     created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['created_on']
+        ordering = ["created_on"]
 
     def __str__(self):
-        return f'Comment {self.content} by {self.user}'
+        return f"Comment {self.content} by {self.user}"
 
 
 class ResetCode(models.Model):
@@ -104,7 +103,7 @@ class ResetCode(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     def save(self, *args, **kwargs):
         ResetCode.objects.filter(user=self.user).delete()
