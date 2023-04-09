@@ -1,0 +1,6 @@
+[tool.isort]
+profile="black"
+line_length=80
+
+[toll.pylint.format]
+max-line-length=80
